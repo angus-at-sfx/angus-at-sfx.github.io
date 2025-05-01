@@ -46,6 +46,19 @@
                         console.log("Parsed CSV Data:", results.data); // Debugging: Log the parsed data
                         const data = results.data;
 
+                        // Debugging: Display the first row of data
+                        if (data.length > 0) {
+                            console.log("First row of data:", data[0]); // Log the first row
+                            const debugMessage = document.createElement('p');
+                            debugMessage.textContent = `First row of data: ${JSON.stringify(data[0])}`;
+                            document.body.insertBefore(debugMessage, dataPreview);
+                        } else {
+                            console.warn("No rows found in the CSV file."); // Debugging: Log if no rows are found
+                            const debugMessage = document.createElement('p');
+                            debugMessage.textContent = "No rows found in the CSV file.";
+                            document.body.insertBefore(debugMessage, dataPreview);
+                        }
+
                         // Process each row to extract family members
                         filteredData = data.flatMap(row => {
                             console.log("Processing row:", row); // Debugging: Log the current row
