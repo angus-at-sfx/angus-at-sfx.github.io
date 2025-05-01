@@ -52,16 +52,18 @@
                             const phone2 = row["Phone 2"];
                             const env = row["Env."];
 
-                            // Extract family members
                             const members = [];
-                            for (let i = 1; i <= 10; i++) { // Assuming up to 10 members per row
-                                const contactType = row[`Contact Type.${i}`];
-                                const name = row[`Name.${i}`];
-                                const birthDate = row[`Birth Date.${i}`];
-                                const age = row[`Age.${i}`];
-                                const religion = row[`Religion.${i}`];
-                                const phones = row[`Phones.${i}`];
-                                const memberEnv = row[`Env..${i}`];
+                            let index = 0;
+
+                            // Dynamically detect repeating groups of columns
+                            while (row[`Contact Type`] || row[`Name`] || row[`Birth Date`] || row[`Age`] || row[`Religion`] || row[`Phones`] || row[`Env.`]) {
+                                const contactType = row[`Contact Type`];
+                                const name = row[`Name`];
+                                const birthDate = row[`Birth Date`];
+                                const age = row[`Age`];
+                                const religion = row[`Religion`];
+                                const phones = row[`Phones`];
+                                const memberEnv = row[`Env.`];
 
                                 if (name) { // Only include members with a name
                                     members.push({
@@ -79,7 +81,19 @@
                                         MemberEnv: memberEnv
                                     });
                                 }
+
+                                // Remove the processed columns for the next iteration
+                                delete row[`Contact Type`];
+                                delete row[`Name`];
+                                delete row[`Birth Date`];
+                                delete row[`Age`];
+                                delete row[`Religion`];
+                                delete row[`Phones`];
+                                delete row[`Env.`];
+
+                                index++;
                             }
+
                             return members;
                         });
 
