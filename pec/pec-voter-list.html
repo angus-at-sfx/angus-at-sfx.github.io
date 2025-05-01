@@ -38,14 +38,17 @@
         csvFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
+                console.log("File selected:", file.name); // Debugging: Log the file name
                 Papa.parse(file, {
                     header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
+                        console.log("Parsed CSV Data:", results.data); // Debugging: Log the parsed data
                         const data = results.data;
 
                         // Process each row to extract family members
                         filteredData = data.flatMap(row => {
+                            console.log("Processing row:", row); // Debugging: Log the current row
                             const familyName = row["Family Name"];
                             const address = `${row["Address 1"]}, ${row["Address 2"]}, ${row["City, Province"]}, ${row["Postal"]}`;
                             const phone1 = row["Phone 1"];
@@ -75,6 +78,8 @@
                                 groupStartIndex = columnNames.indexOf("Contact Type", groupStartIndex + 7);
                             }
 
+                            console.log("Detected column groups:", columnGroups); // Debugging: Log detected column groups
+
                             // Process each group of columns
                             columnGroups.forEach(group => {
                                 const contactType = row[group.contactType];
@@ -86,7 +91,7 @@
                                 const memberEnv = row[group.memberEnv];
 
                                 if (name) { // Only include members with a name
-                                    members.push({
+                                    const member = {
                                         FamilyName: familyName,
                                         Address: address,
                                         Phone1: phone1,
@@ -99,16 +104,26 @@
                                         Religion: religion,
                                         Phones: phones,
                                         MemberEnv: memberEnv
-                                    });
+                                    };
+                                    console.log("Adding member:", member); // Debugging: Log each member added
+                                    members.push(member);
                                 }
                             });
 
                             return members;
                         });
 
+                        console.log("Filtered Data:", filteredData); // Debugging: Log the filtered data
                         displayData(filteredData);
+                    },
+                    error: (error) => {
+                        console.error("Error parsing CSV:", error); // Debugging: Log parsing errors
+                        alert("Error parsing CSV file. Check the console for details.");
                     }
                 });
+            } else {
+                console.error("No file selected."); // Debugging: Log if no file is selected
+                alert("Please select a CSV file.");
             }
         });
 
@@ -141,6 +156,9 @@
                     });
                     tbody.appendChild(tr);
                 });
+            } else {
+                console.warn("No data to display."); // Debugging: Log if no data is available
+                alert("No data to display.");
             }
         }
 
