@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.1</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.2</span></h1>
     </header>
     <main>
         <section>
@@ -53,17 +53,37 @@
                             const env = row["Env."];
 
                             const members = [];
-                            let index = 0;
+                            const columnGroups = []; // Array to store groups of repeating columns
 
                             // Dynamically detect repeating groups of columns
-                            while (row[`Contact Type`] || row[`Name`] || row[`Birth Date`] || row[`Age`] || row[`Religion`] || row[`Phones`] || row[`Env.`]) {
-                                const contactType = row[`Contact Type`];
-                                const name = row[`Name`];
-                                const birthDate = row[`Birth Date`];
-                                const age = row[`Age`];
-                                const religion = row[`Religion`];
-                                const phones = row[`Phones`];
-                                const memberEnv = row[`Env.`];
+                            const columnNames = Object.keys(row);
+                            let groupStartIndex = columnNames.indexOf("Contact Type");
+
+                            while (groupStartIndex !== -1) {
+                                const group = {
+                                    contactType: columnNames[groupStartIndex],
+                                    name: columnNames[groupStartIndex + 1],
+                                    birthDate: columnNames[groupStartIndex + 2],
+                                    age: columnNames[groupStartIndex + 3],
+                                    religion: columnNames[groupStartIndex + 4],
+                                    phones: columnNames[groupStartIndex + 5],
+                                    memberEnv: columnNames[groupStartIndex + 6],
+                                };
+                                columnGroups.push(group);
+
+                                // Find the next group of repeating columns
+                                groupStartIndex = columnNames.indexOf("Contact Type", groupStartIndex + 7);
+                            }
+
+                            // Process each group of columns
+                            columnGroups.forEach(group => {
+                                const contactType = row[group.contactType];
+                                const name = row[group.name];
+                                const birthDate = row[group.birthDate];
+                                const age = row[group.age];
+                                const religion = row[group.religion];
+                                const phones = row[group.phones];
+                                const memberEnv = row[group.memberEnv];
 
                                 if (name) { // Only include members with a name
                                     members.push({
@@ -81,18 +101,7 @@
                                         MemberEnv: memberEnv
                                     });
                                 }
-
-                                // Remove the processed columns for the next iteration
-                                delete row[`Contact Type`];
-                                delete row[`Name`];
-                                delete row[`Birth Date`];
-                                delete row[`Age`];
-                                delete row[`Religion`];
-                                delete row[`Phones`];
-                                delete row[`Env.`];
-
-                                index++;
-                            }
+                            });
 
                             return members;
                         });
