@@ -23,6 +23,9 @@
                 <tbody></tbody>
             </table>
         </section>
+        <section id="debugLogs">
+            <h3>Debug Logs</h3>
+        </section>
     </main>
     <footer>
         <p>&copy; 2025 PEC Voter List. All rights reserved.</p>
@@ -38,30 +41,23 @@
         csvFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
-                console.log("File selected:", file.name); // Debugging: Log the file name
+                logMessage(`File selected: ${file.name}`); // Display file name on the page
                 Papa.parse(file, {
                     header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
-                        console.log("Parsed CSV Data:", results.data); // Debugging: Log the parsed data
                         const data = results.data;
 
-                        // Debugging: Display the first row of data
+                        // Display parsed data
                         if (data.length > 0) {
-                            console.log("First row of data:", data[0]); // Log the first row
-                            const debugMessage = document.createElement('p');
-                            debugMessage.textContent = `First row of data: ${JSON.stringify(data[0])}`;
-                            document.body.insertBefore(debugMessage, dataPreview);
+                            logMessage(`First row of data: ${JSON.stringify(data[0])}`);
                         } else {
-                            console.warn("No rows found in the CSV file."); // Debugging: Log if no rows are found
-                            const debugMessage = document.createElement('p');
-                            debugMessage.textContent = "No rows found in the CSV file.";
-                            document.body.insertBefore(debugMessage, dataPreview);
+                            logMessage("No rows found in the CSV file.");
                         }
 
                         // Process each row to extract family members
                         filteredData = data.flatMap(row => {
-                            console.log("Processing row:", row); // Debugging: Log the current row
+                            logMessage(`Processing row: ${JSON.stringify(row)}`);
                             const familyName = row["Family Name"];
                             const address = `${row["Address 1"]}, ${row["Address 2"]}, ${row["City, Province"]}, ${row["Postal"]}`;
                             const phone1 = row["Phone 1"];
@@ -91,7 +87,7 @@
                                 groupStartIndex = columnNames.indexOf("Contact Type", groupStartIndex + 7);
                             }
 
-                            console.log("Detected column groups:", columnGroups); // Debugging: Log detected column groups
+                            logMessage(`Detected column groups: ${JSON.stringify(columnGroups)}`);
 
                             // Process each group of columns
                             columnGroups.forEach(group => {
@@ -118,7 +114,7 @@
                                         Phones: phones,
                                         MemberEnv: memberEnv
                                     };
-                                    console.log("Adding member:", member); // Debugging: Log each member added
+                                    logMessage(`Adding member: ${JSON.stringify(member)}`);
                                     members.push(member);
                                 }
                             });
@@ -126,19 +122,25 @@
                             return members;
                         });
 
-                        console.log("Filtered Data:", filteredData); // Debugging: Log the filtered data
+                        logMessage(`Filtered Data: ${JSON.stringify(filteredData)}`);
                         displayData(filteredData);
                     },
                     error: (error) => {
-                        console.error("Error parsing CSV:", error); // Debugging: Log parsing errors
-                        alert("Error parsing CSV file. Check the console for details.");
+                        logMessage(`Error parsing CSV: ${error.message}`);
                     }
                 });
             } else {
-                console.error("No file selected."); // Debugging: Log if no file is selected
-                alert("Please select a CSV file.");
+                logMessage("No file selected.");
             }
         });
+
+        // Function to display debugging messages on the page
+        function logMessage(message) {
+            const logSection = document.getElementById('debugLogs');
+            const logMessage = document.createElement('p');
+            logMessage.textContent = message;
+            logSection.appendChild(logMessage);
+        }
 
         function displayData(data) {
             const thead = dataPreview.querySelector('thead');
