@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEC Voter List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>PEC Voter List</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Upload and Filter CSV</h2>
+            <input type="file" id="csvFileInput" accept=".csv">
+            <button id="downloadFilteredCsv">Download Filtered CSV</button>
+        </section>
+        <section>
+            <h3>Filtered Data Preview</h3>
+            <table id="dataPreview" border="1">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 PEC Voter List. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const csvFileInput = document.getElementById('csvFileInput');
+        const downloadFilteredCsv = document.getElementById('downloadFilteredCsv');
+        const dataPreview = document.getElementById('dataPreview');
+
+        let filteredData = [];
+
+        csvFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        const data = results.data;
+
+                        // Process each row to extract family members
+                        filteredData = data.flatMap(row => {
+                            const familyName = row["Family Name"];
+                            const address = `${row["Address 1"]}, ${row["Address 2"]}, ${row["City, Province"]}, ${row["Postal"]}`;
+                            const phone1 = row["Phone 1"];
+                            const phone2 = row["Phone 2"];
+                            const env = row["Env."];
+
+                            // Extract family members
+                            const members = [];
+                            for (let i = 1; i <= 10; i++) { // Assuming up to 10 members per row
+                                const contactType = row[`Contact Type.${i}`];
+                                const name = row[`Name.${i}`];
+                                const birthDate = row[`Birth Date.${i}`];
+                                const age = row[`Age.${i}`];
+                                const religion = row[`Religion.${i}`];
+                                const phones = row[`Phones.${i}`];
+                                const memberEnv = row[`Env..${i}`];
+
+                                if (name) { // Only include members with a name
+                                    members.push({
+                                        FamilyName: familyName,
+                                        Address: address,
+                                        Phone1: phone1,
+                                        Phone2: phone2,
+                                        Env: env,
+                                        ContactType: contactType,
+                                        Name: name,
+                                        BirthDate: birthDate,
+                                        Age: age,
+                                        Religion: religion,
+                                        Phones: phones,
+                                        MemberEnv: memberEnv
+                                    });
+                                }
+                            }
+                            return members;
+                        });
+
+                        displayData(filteredData);
+                    }
+                });
+            }
+        });
+
+        function displayData(data) {
+            const thead = dataPreview.querySelector('thead');
+            const tbody = dataPreview.querySelector('tbody');
+
+            // Clear existing table content
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            if (data.length > 0) {
+                // Create table headers
+                const headers = Object.keys(data[0]);
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+
+                // Create table rows
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        td.textContent = row[header];
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        downloadFilteredCsv.addEventListener('click', () => {
+            if (filteredData.length > 0) {
+                const csvContent = Papa.unparse(filteredData);
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'filtered_data.csv');
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('No filtered data available to download.');
+            }
+        });
+    </script>
+</body>
+</html>
