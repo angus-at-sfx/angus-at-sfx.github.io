@@ -48,15 +48,30 @@
                     complete: (results) => {
                         const data = results.data;
 
+                        // Normalize column names
+                        const normalizedData = data.map(row => {
+                            const normalizedRow = {};
+                            Object.keys(row).forEach(key => {
+                                const normalizedKey = key.trim(); // Trim spaces
+                                normalizedRow[normalizedKey] = row[key];
+                            });
+                            return normalizedRow;
+                        });
+
+                        // Debugging: Log normalized column names
+                        if (normalizedData.length > 0) {
+                            logMessage(`Normalized column names: ${JSON.stringify(Object.keys(normalizedData[0]))}`);
+                        }
+
                         // Display parsed data
-                        if (data.length > 0) {
-                            logMessage(`First row of data: ${JSON.stringify(data[0])}`);
+                        if (normalizedData.length > 0) {
+                            logMessage(`First row of data: ${JSON.stringify(normalizedData[0])}`);
                         } else {
                             logMessage("No rows found in the CSV file.");
                         }
 
                         // Process each row to extract family members
-                        filteredData = data.flatMap(row => {
+                        filteredData = normalizedData.flatMap(row => {
                             logMessage(`Processing row: ${JSON.stringify(row)}`);
                             const familyName = row["Family Name"];
                             const address = `${row["Address 1"]}, ${row["Address 2"]}, ${row["City, Province"]}, ${row["Postal"]}`;
