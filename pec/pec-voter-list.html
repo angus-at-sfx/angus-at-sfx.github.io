@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.6</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.7</span></h1>
     </header>
     <main>
         <section>
@@ -43,84 +43,43 @@
             if (file) {
                 logMessage(`File selected: ${file.name}`); // Display file name on the page
                 Papa.parse(file, {
-                    header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
-                        const data = results.data;
+                        const rawData = results.data;
 
-                        // Normalize column names
-                        const normalizedData = data.map(row => {
-                            const normalizedRow = {};
-                            Object.keys(row).forEach(key => {
-                                const normalizedKey = key.trim(); // Trim spaces
-                                normalizedRow[normalizedKey] = row[key];
-                            });
-                            return normalizedRow;
-                        });
+                        // Extract the header row as an array
+                        const header = rawData[0];
+                        logMessage(`Header: ${JSON.stringify(header)}`);
 
-                        // Debugging: Log normalized column names
-                        if (normalizedData.length > 0) {
-                            logMessage(`Normalized column names: ${JSON.stringify(Object.keys(normalizedData[0]))}`);
-                        }
+                        // Extract the data rows
+                        const dataRows = rawData.slice(1);
+                        logMessage(`Number of data rows: ${dataRows.length}`);
 
-                        // Display parsed data
-                        if (normalizedData.length > 0) {
-                            logMessage(`First row of data: ${JSON.stringify(normalizedData[0])}`);
-                        } else {
-                            logMessage("No rows found in the CSV file.");
-                        }
-
-                        // Process each row to extract family members
-                        filteredData = normalizedData.flatMap(row => {
-                            logMessage(`Processing row: ${JSON.stringify(row)}`);
-                            const familyName = row["Family Name"];
-                            const address = `${row["Address 1"]}, ${row["Address 2"]}, ${row["City, Province"]}, ${row["Postal"]}`;
-                            const phone1 = row["Phone 1"];
-                            const phone2 = row["Phone 2"];
-                            const env = row["Env."];
-
+                        // Process each data row
+                        filteredData = dataRows.flatMap(row => {
+                            const familyData = {};
                             const members = [];
-                            const columnGroups = []; // Array to store groups of repeating columns
 
-                            // Dynamically detect repeating groups of columns
-                            const columnNames = Object.keys(row);
-                            let groupStartIndex = columnNames.indexOf("Contact Type");
-
-                            while (groupStartIndex !== -1) {
-                                const group = {
-                                    contactType: columnNames[groupStartIndex],
-                                    name: columnNames[groupStartIndex + 1],
-                                    birthDate: columnNames[groupStartIndex + 2],
-                                    age: columnNames[groupStartIndex + 3],
-                                    religion: columnNames[groupStartIndex + 4],
-                                    phones: columnNames[groupStartIndex + 5],
-                                    memberEnv: columnNames[groupStartIndex + 6],
-                                };
-                                columnGroups.push(group);
-
-                                // Find the next group of repeating columns
-                                groupStartIndex = columnNames.indexOf("Contact Type", groupStartIndex + 7);
+                            // Extract family-level data (before the first "Contact Type")
+                            for (let i = 0; i < header.length; i++) {
+                                if (header[i] === "Contact Type") break;
+                                familyData[header[i]] = row[i];
                             }
 
-                            logMessage(`Detected column groups: ${JSON.stringify(columnGroups)}`);
-
-                            // Process each group of columns
-                            columnGroups.forEach(group => {
-                                const contactType = row[group.contactType];
-                                const name = row[group.name];
-                                const birthDate = row[group.birthDate];
-                                const age = row[group.age];
-                                const religion = row[group.religion];
-                                const phones = row[group.phones];
-                                const memberEnv = row[group.memberEnv];
+                            // Extract personal records for each family member
+                            let groupStartIndex = header.indexOf("Contact Type");
+                            while (groupStartIndex !== -1 && groupStartIndex < header.length) {
+                                const contactType = row[groupStartIndex];
+                                const name = row[groupStartIndex + 1];
+                                const birthDate = row[groupStartIndex + 2];
+                                const age = row[groupStartIndex + 3];
+                                const religion = row[groupStartIndex + 4];
+                                const phones = row[groupStartIndex + 5];
+                                const memberEnv = row[groupStartIndex + 6];
 
                                 if (name) { // Only include members with a name
-                                    const member = {
-                                        FamilyName: familyName,
-                                        Address: address,
-                                        Phone1: phone1,
-                                        Phone2: phone2,
-                                        Env: env,
+                                    members.push({
+                                        ...familyData, // Include family-level data
                                         ContactType: contactType,
                                         Name: name,
                                         BirthDate: birthDate,
@@ -128,11 +87,12 @@
                                         Religion: religion,
                                         Phones: phones,
                                         MemberEnv: memberEnv
-                                    };
-                                    logMessage(`Adding member: ${JSON.stringify(member)}`);
-                                    members.push(member);
+                                    });
                                 }
-                            });
+
+                                // Move to the next group of repeating columns
+                                groupStartIndex = header.indexOf("Contact Type", groupStartIndex + 7);
+                            }
 
                             return members;
                         });
