@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.11</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.12</span></h1>
     </header>
     <main>
         <section>
@@ -183,12 +183,15 @@
             // Combine header and data rows
             const testData = [header, ...dataRows];
 
-            // Log the raw test data
-            logMessage(`Raw Test Data: ${JSON.stringify(testData)}`);
+            // Convert test data to CSV format
+            const csvData = Papa.unparse(testData);
+
+            // Log the raw test data in CSV format
+            logMessage(`Raw Test Data (CSV):\n${csvData}`);
 
             // Simulate parsing and filtering the generated test data
             logMessage("Parsing and filtering generated test data...");
-            Papa.parse(Papa.unparse(testData), {
+            Papa.parse(csvData, {
                 header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
