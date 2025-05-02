@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.13</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.14</span></h1>
     </header>
     <main>
         <section>
@@ -199,36 +199,39 @@
 
         function parseAndFilterData(csvData) {
             Papa.parse(csvData, {
-                header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
                     const rawData = results.data;
 
-                    // Extract the header row
-                    const header = Object.keys(rawData[0]);
+                    // Extract the header row as an array
+                    const header = rawData[0]; // First row is the header
                     logMessage(`Header: ${JSON.stringify(header)}`);
 
-                    // Process the data rows
-                    filteredData = rawData.flatMap(row => {
+                    // Extract the data rows
+                    const dataRows = rawData.slice(1);
+                    logMessage(`Number of data rows: ${dataRows.length}`);
+
+                    // Process each data row
+                    filteredData = dataRows.flatMap(row => {
                         const familyData = {};
                         const members = [];
 
                         // Extract family-level data (before the first "Contact Type")
                         for (let i = 0; i < header.length; i++) {
                             if (header[i] === "Contact Type") break;
-                            familyData[header[i]] = row[header[i]];
+                            familyData[header[i]] = row[i];
                         }
 
                         // Extract personal records for each family member
                         let groupStartIndex = header.indexOf("Contact Type");
                         while (groupStartIndex !== -1 && groupStartIndex < header.length) {
-                            const contactType = row[header[groupStartIndex]];
-                            const name = row[header[groupStartIndex + 1]];
-                            const birthDate = row[header[groupStartIndex + 2]];
-                            const age = row[header[groupStartIndex + 3]];
-                            const religion = row[header[groupStartIndex + 4]];
-                            const phones = row[header[groupStartIndex + 5]];
-                            const memberEnv = row[header[groupStartIndex + 6]];
+                            const contactType = row[groupStartIndex];
+                            const name = row[groupStartIndex + 1];
+                            const birthDate = row[groupStartIndex + 2];
+                            const age = row[groupStartIndex + 3];
+                            const religion = row[groupStartIndex + 4];
+                            const phones = row[groupStartIndex + 5];
+                            const memberEnv = row[groupStartIndex + 6];
 
                             if (name) { // Only include members with a name
                                 members.push({
