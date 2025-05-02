@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.10</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.11</span></h1>
     </header>
     <main>
         <section>
@@ -182,6 +182,9 @@
 
             // Combine header and data rows
             const testData = [header, ...dataRows];
+
+            // Log the raw test data
+            logMessage(`Raw Test Data: ${JSON.stringify(testData)}`);
 
             // Simulate parsing and filtering the generated test data
             logMessage("Parsing and filtering generated test data...");
