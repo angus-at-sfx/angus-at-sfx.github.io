@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.8</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.9</span></h1>
     </header>
     <main>
         <section>
@@ -119,8 +119,123 @@
 
         // Placeholder function for generating test data
         function generateTestData() {
-            // Implement test data generation logic here
-            logMessage("Test data generation is not implemented yet.");
+            logMessage(`Generating ${numRows} rows of test data...`);
+
+            // Header row
+            const header = [
+                "Family Name", "Address 1", "Address 2", "City, Province", "Postal", "Phone 1", "Phone 2", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env."
+            ];
+
+            // Generate random data rows
+            const dataRows = [];
+            for (let i = 0; i < numRows; i++) {
+                const familyName = `Family ${i + 1}`;
+                const address1 = `${Math.floor(Math.random() * 10000)} Random Street`;
+                const address2 = Math.random() > 0.5 ? "Apt " + Math.floor(Math.random() * 100) : "";
+                const cityProvince = `City ${i % 50}, Province ${String.fromCharCode(65 + (i % 26))}`;
+                const postal = `P${Math.floor(Math.random() * 10)}C ${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`;
+                const phone1 = Math.random() > 0.5 ? `(H) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
+                const phone2 = Math.random() > 0.5 ? `(C) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
+                const env = `${Math.floor(Math.random() * 20)} Years`;
+
+                // Generate personal records (0 to many)
+                const numMembers = Math.floor(Math.random() * 5); // 0 to 4 members
+                const personalRecords = [];
+                for (let j = 0; j < numMembers; j++) {
+                    const contactType = ["Primary", "Secondary", "Other"][Math.floor(Math.random() * 3)];
+                    const name = `Member ${j + 1} of Family ${i + 1}`;
+                    const birthDate = `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`;
+                    const age = Math.floor(Math.random() * 100);
+                    const religion = ["Roman Catholic", "Protestant", "None", "Other"][Math.floor(Math.random() * 4)];
+                    const phones = Math.random() > 0.5 ? `(C) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
+                    const memberEnv = `${Math.floor(Math.random() * 10)} Years`;
+
+                    personalRecords.push(contactType, name, birthDate, age, religion, phones, memberEnv);
+                }
+
+                // Fill remaining personal record columns with empty values
+                while (personalRecords.length < 63) {
+                    personalRecords.push("");
+                }
+
+                // Combine family-level data and personal records
+                const row = [
+                    familyName, address1, address2, cityProvince, postal, phone1, phone2, env,
+                    ...personalRecords
+                ];
+                dataRows.push(row);
+            }
+
+            // Combine header and data rows
+            const testData = [header, ...dataRows];
+
+            // Simulate parsing and filtering the generated test data
+            logMessage("Parsing and filtering generated test data...");
+            Papa.parse(Papa.unparse(testData), {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    const rawData = results.data;
+
+                    // Extract the header row
+                    const header = Object.keys(rawData[0]);
+                    logMessage(`Header: ${JSON.stringify(header)}`);
+
+                    // Process the data rows
+                    filteredData = rawData.flatMap(row => {
+                        const familyData = {};
+                        const members = [];
+
+                        // Extract family-level data (before the first "Contact Type")
+                        for (let i = 0; i < header.length; i++) {
+                            if (header[i] === "Contact Type") break;
+                            familyData[header[i]] = row[header[i]];
+                        }
+
+                        // Extract personal records for each family member
+                        let groupStartIndex = header.indexOf("Contact Type");
+                        while (groupStartIndex !== -1 && groupStartIndex < header.length) {
+                            const contactType = row[header[groupStartIndex]];
+                            const name = row[header[groupStartIndex + 1]];
+                            const birthDate = row[header[groupStartIndex + 2]];
+                            const age = row[header[groupStartIndex + 3]];
+                            const religion = row[header[groupStartIndex + 4]];
+                            const phones = row[header[groupStartIndex + 5]];
+                            const memberEnv = row[header[groupStartIndex + 6]];
+
+                            if (name) { // Only include members with a name
+                                members.push({
+                                    ...familyData, // Include family-level data
+                                    ContactType: contactType,
+                                    Name: name,
+                                    BirthDate: birthDate,
+                                    Age: age,
+                                    Religion: religion,
+                                    Phones: phones,
+                                    MemberEnv: memberEnv
+                                });
+                            }
+
+                            // Move to the next group of repeating columns
+                            groupStartIndex = header.indexOf("Contact Type", groupStartIndex + 7);
+                        }
+
+                        return members;
+                    });
+
+                    logMessage(`Filtered Data: ${JSON.stringify(filteredData)}`);
+                    displayData(filteredData);
+                }
+            });
         }
 
         // Function to display debugging messages on the page
