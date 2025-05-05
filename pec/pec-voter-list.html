@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.21</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.22</span></h1>
     </header>
     <main>
         <section>
@@ -280,7 +280,7 @@
                     // Define the desired column order
                     const desiredColumns = [
                         "Name", "Birth Date", "Age", "Phones", "Phone 1", "Phone 2",
-                        "Address 1", "Address 2", "City, Province", "Postal", "Family Name"
+                        "Address 1", "Address 2", "City, Province", "Postal", "Family Name", "Duplicate"
                     ];
 
                     // Process each data row
@@ -317,7 +317,8 @@
                                     "Address 2": familyData["Address 2"],
                                     "City, Province": familyData["City, Province"],
                                     Postal: familyData["Postal"],
-                                    "Family Name": familyData["Family Name"]
+                                    "Family Name": familyData["Family Name"],
+                                    Duplicate: "" // Initialize Duplicate column
                                 });
                             }
 
@@ -337,6 +338,22 @@
                         return reorderedRow;
                     });
 
+                    // Identify duplicates in the Name column
+                    const nameCounts = {};
+                    filteredData.forEach(row => {
+                        const name = row.Name;
+                        if (name) {
+                            nameCounts[name] = (nameCounts[name] || 0) + 1;
+                        }
+                    });
+
+                    // Mark duplicates in the Duplicate column
+                    filteredData.forEach(row => {
+                        if (nameCounts[row.Name] > 1) {
+                            row.Duplicate = "x";
+                        }
+                    });
+
                     // Sort the filtered data by the Name column (primary) and Age column (secondary)
                     filteredData.sort((a, b) => {
                         const nameA = a.Name.toLowerCase();
@@ -352,7 +369,7 @@
                         return ageA - ageB;
                     });
 
-                    logMessage(`Filtered Data (Sorted by Name): ${JSON.stringify(filteredData)}`);
+                    logMessage(`Filtered Data (Sorted by Name and Marked Duplicates): ${JSON.stringify(filteredData)}`);
                     displayData(filteredData);
                 },
                 error: (error) => {
