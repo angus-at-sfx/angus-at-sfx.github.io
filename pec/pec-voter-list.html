@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.16</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.17</span></h1>
     </header>
     <main>
         <section>
@@ -83,6 +83,12 @@
                 "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env."
             ];
 
+            // Pool of random names to introduce duplicates
+            const namePool = [
+                "John Doe", "Jane Smith", "Alice Johnson", "Bob Brown", "Charlie Davis",
+                "Emily Wilson", "Michael Miller", "Sarah Taylor", "David Anderson", "Laura Thomas"
+            ];
+
             // Generate random data rows
             const dataRows = [];
             for (let i = 0; i < numRows; i++) {
@@ -101,10 +107,10 @@
                 for (let j = 0; j < numMembers; j++) {
                     const contactType = ["Primary", "Secondary", "Other"][Math.floor(Math.random() * 3)];
                     
-                    // Introduce duplicate names for some members
+                    // Randomly select a name from the pool, with a chance of reusing a name
                     const name = Math.random() > 0.7 
-                        ? `Duplicate Name` // 30% chance of having a duplicate name
-                        : `Member ${j + 1} of Family ${i + 1}`;
+                        ? namePool[Math.floor(Math.random() * namePool.length)] // Reuse a name from the pool
+                        : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
                     const birthDate = `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`;
                     const age = Math.floor(Math.random() * 100);
