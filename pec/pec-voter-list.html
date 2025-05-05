@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.22</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.23</span></h1>
     </header>
     <main>
         <section>
@@ -120,7 +120,10 @@
                         : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
                     const birthDate = `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`;
-                    const age = Math.floor(Math.random() * 100);
+                    
+                    // Randomly make the Age field empty
+                    const age = Math.random() > 0.2 ? Math.floor(Math.random() * 100) : ""; // 20% chance of being empty
+                    
                     const religion = ["Roman Catholic", "Protestant", "None", "Other"][Math.floor(Math.random() * 4)];
                     const phones = Math.random() > 0.5 ? `(C) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
                     const memberEnv = `${Math.floor(Math.random() * 10)} Years`;
