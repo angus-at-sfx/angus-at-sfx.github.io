@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.23</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.24</span></h1>
     </header>
     <main>
         <section>
@@ -96,6 +96,19 @@
                 "Emily Wilson", "Michael Miller", "Sarah Taylor", "David Anderson", "Laura Thomas"
             ];
 
+            // Helper function to calculate age from birth date
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birth = new Date(birthDate);
+                let age = today.getFullYear() - birth.getFullYear();
+                const monthDiff = today.getMonth() - birth.getMonth();
+                const dayDiff = today.getDate() - birth.getDate();
+                if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+                    age--; // Adjust age if the birth date hasn't occurred yet this year
+                }
+                return age;
+            }
+
             // Generate random data rows
             const dataRows = [];
             for (let i = 0; i < numRows; i++) {
@@ -119,10 +132,13 @@
                         ? namePool[Math.floor(Math.random() * namePool.length)] // Reuse a name from the pool
                         : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
-                    const birthDate = `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`;
+                    const birthYear = 1970 + Math.floor(Math.random() * 50); // Random year between 1970 and 2020
+                    const birthMonth = String(Math.floor(1 + Math.random() * 12)).padStart(2, "0"); // Random month
+                    const birthDay = String(Math.floor(1 + Math.random() * 28)).padStart(2, "0"); // Random day
+                    const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
                     
-                    // Randomly make the Age field empty
-                    const age = Math.random() > 0.2 ? Math.floor(Math.random() * 100) : ""; // 20% chance of being empty
+                    // Calculate age from birth date
+                    const age = calculateAge(birthDate);
                     
                     const religion = ["Roman Catholic", "Protestant", "None", "Other"][Math.floor(Math.random() * 4)];
                     const phones = Math.random() > 0.5 ? `(C) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
