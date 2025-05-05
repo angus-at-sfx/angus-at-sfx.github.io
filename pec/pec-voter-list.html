@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.27</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.28</span></h1>
     </header>
     <main>
         <section>
@@ -134,7 +134,7 @@
                         : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
                     // Randomly set Birth Date to empty
-                    const birthDate = Math.random() > 0.99 // 50% chance of being empty
+                    const birthDate = Math.random() > 0.2 // 20% chance of being empty
                         ? `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`
                         : "";
 
@@ -201,9 +201,12 @@
             if (rowCountBelow19) rowCountBelow19.remove();
 
             if (data.length > 0) {
-                // Split data into two groups: Age 19 and above, and Age below 19
+                // Split data into two groups: Age 19 and above, and Age below 19 or empty Age
                 const dataAbove19 = data.filter(row => parseInt(row.Age, 10) >= 19);
-                const dataBelow19 = data.filter(row => parseInt(row.Age, 10) < 19);
+                const dataBelow19 = data.filter(row => {
+                    const age = parseInt(row.Age, 10);
+                    return isNaN(age) || age < 19; // Include rows with empty or invalid Age
+                });
 
                 // Display row count for Age 19 and above
                 const above19Count = document.createElement('p');
@@ -233,13 +236,13 @@
                     });
                 }
 
-                // Display row count for Age below 19
+                // Display row count for Age below 19 or empty Age
                 const below19Count = document.createElement('p');
                 below19Count.id = 'rowCountBelow19';
                 below19Count.textContent = `Number of rows: ${dataBelow19.length}`;
                 document.getElementById('dataPreviewBelow19').parentElement.insertBefore(below19Count, document.getElementById('dataPreviewBelow19'));
 
-                // Display data for Age below 19
+                // Display data for Age below 19 or empty Age
                 if (dataBelow19.length > 0) {
                     const headers = Object.keys(dataBelow19[0]);
                     const headerRow = document.createElement('tr');
