@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.29</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.30</span></h1>
     </header>
     <main>
         <section>
@@ -303,7 +303,7 @@
                     // Define the desired column order
                     const desiredColumns = [
                         "Name", "Birth Date", "Age", "Phones", "Phone 1", "Phone 2",
-                        "Address 1", "Address 2", "City, Province", "Postal", "Family Name", "Duplicate"
+                        "Address 1", "Address 2", "City, Province", "Postal", "Family Name", "Duplicate", "No Members"
                     ];
 
                     // Process each data row
@@ -346,7 +346,8 @@
                                     "City, Province": familyData["City, Province"],
                                     Postal: familyData["Postal"],
                                     "Family Name": familyData["Family Name"],
-                                    Duplicate: "" // Initialize Duplicate column
+                                    Duplicate: "", // Initialize Duplicate column
+                                    "No Members": "" // Initialize No Members column
                                 });
                             }
 
@@ -368,7 +369,8 @@
                                 "City, Province": familyData["City, Province"],
                                 Postal: familyData["Postal"],
                                 "Family Name": familyData["Family Name"],
-                                Duplicate: "" // Initialize Duplicate column
+                                Duplicate: "", // Initialize Duplicate column
+                                "No Members": "x" // Mark as having no members
                             });
                         }
 
@@ -415,7 +417,7 @@
                         return ageA - ageB;
                     });
 
-                    logMessage(`Filtered Data (Sorted by Name and Marked Duplicates): ${JSON.stringify(filteredData)}`);
+                    logMessage(`Filtered Data (Sorted by Name, Marked Duplicates, and No Members): ${JSON.stringify(filteredData)}`);
                     displayData(filteredData);
                 },
                 error: (error) => {
