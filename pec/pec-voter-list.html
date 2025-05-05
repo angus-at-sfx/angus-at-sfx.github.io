@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.24</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.25</span></h1>
     </header>
     <main>
         <section>
@@ -98,6 +98,7 @@
 
             // Helper function to calculate age from birth date
             function calculateAge(birthDate) {
+                if (!birthDate) return ""; // Return empty if birth date is missing
                 const today = new Date();
                 const birth = new Date(birthDate);
                 let age = today.getFullYear() - birth.getFullYear();
@@ -132,11 +133,11 @@
                         ? namePool[Math.floor(Math.random() * namePool.length)] // Reuse a name from the pool
                         : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
-                    const birthYear = 1970 + Math.floor(Math.random() * 50); // Random year between 1970 and 2020
-                    const birthMonth = String(Math.floor(1 + Math.random() * 12)).padStart(2, "0"); // Random month
-                    const birthDay = String(Math.floor(1 + Math.random() * 28)).padStart(2, "0"); // Random day
-                    const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
-                    
+                    // Randomly set Birth Date to empty
+                    const birthDate = Math.random() > 0.2 // 20% chance of being empty
+                        ? `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`
+                        : "";
+
                     // Calculate age from birth date
                     const age = calculateAge(birthDate);
                     
