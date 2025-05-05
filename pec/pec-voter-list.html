@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.19</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.20</span></h1>
     </header>
     <main>
         <section>
@@ -21,8 +21,15 @@
             <button id="downloadFilteredCsv">Download Filtered CSV</button>
         </section>
         <section>
-            <h3>Filtered Data Preview</h3>
+            <h3>Filtered Data Preview (Age 19 and Above)</h3>
             <table id="dataPreview" border="1">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </section>
+        <section>
+            <h3>Filtered Data Preview (Age Below 19)</h3>
+            <table id="dataPreviewBelow19" border="1">
                 <thead></thead>
                 <tbody></tbody>
             </table>
@@ -158,32 +165,63 @@
         function displayData(data) {
             const thead = dataPreview.querySelector('thead');
             const tbody = dataPreview.querySelector('tbody');
+            const theadBelow19 = document.getElementById('dataPreviewBelow19').querySelector('thead');
+            const tbodyBelow19 = document.getElementById('dataPreviewBelow19').querySelector('tbody');
 
             // Clear existing table content
             thead.innerHTML = '';
             tbody.innerHTML = '';
+            theadBelow19.innerHTML = '';
+            tbodyBelow19.innerHTML = '';
 
             if (data.length > 0) {
-                // Create table headers
-                const headers = Object.keys(data[0]);
-                const headerRow = document.createElement('tr');
-                headers.forEach(header => {
-                    const th = document.createElement('th');
-                    th.textContent = header;
-                    headerRow.appendChild(th);
-                });
-                thead.appendChild(headerRow);
+                // Split data into two groups: Age 19 and above, and Age below 19
+                const dataAbove19 = data.filter(row => parseInt(row.Age, 10) >= 19);
+                const dataBelow19 = data.filter(row => parseInt(row.Age, 10) < 19);
 
-                // Create table rows
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
+                // Display data for Age 19 and above
+                if (dataAbove19.length > 0) {
+                    const headers = Object.keys(dataAbove19[0]);
+                    const headerRow = document.createElement('tr');
                     headers.forEach(header => {
-                        const td = document.createElement('td');
-                        td.textContent = row[header];
-                        tr.appendChild(td);
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
                     });
-                    tbody.appendChild(tr);
-                });
+                    thead.appendChild(headerRow);
+
+                    dataAbove19.forEach(row => {
+                        const tr = document.createElement('tr');
+                        headers.forEach(header => {
+                            const td = document.createElement('td');
+                            td.textContent = row[header];
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                // Display data for Age below 19
+                if (dataBelow19.length > 0) {
+                    const headers = Object.keys(dataBelow19[0]);
+                    const headerRow = document.createElement('tr');
+                    headers.forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+                    theadBelow19.appendChild(headerRow);
+
+                    dataBelow19.forEach(row => {
+                        const tr = document.createElement('tr');
+                        headers.forEach(header => {
+                            const td = document.createElement('td');
+                            td.textContent = row[header];
+                            tr.appendChild(td);
+                        });
+                        tbodyBelow19.appendChild(tr);
+                    });
+                }
             } else {
                 console.warn("No data to display."); // Debugging: Log if no data is available
                 alert("No data to display.");
