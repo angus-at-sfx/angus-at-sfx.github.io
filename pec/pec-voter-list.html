@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.25</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.26</span></h1>
     </header>
     <main>
         <section>
@@ -134,7 +134,7 @@
                         : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
                     // Randomly set Birth Date to empty
-                    const birthDate = Math.random() > 0.2 // 20% chance of being empty
+                    const birthDate = Math.random() > 0.5 // 50% chance of being empty
                         ? `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`
                         : "";
 
