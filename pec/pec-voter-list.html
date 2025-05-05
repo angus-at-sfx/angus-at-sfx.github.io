@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.15</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.16</span></h1>
     </header>
     <main>
         <section>
@@ -100,7 +100,12 @@
                 const personalRecords = [];
                 for (let j = 0; j < numMembers; j++) {
                     const contactType = ["Primary", "Secondary", "Other"][Math.floor(Math.random() * 3)];
-                    const name = `Member ${j + 1} of Family ${i + 1}`;
+                    
+                    // Introduce duplicate names for some members
+                    const name = Math.random() > 0.7 
+                        ? `Duplicate Name` // 30% chance of having a duplicate name
+                        : `Member ${j + 1} of Family ${i + 1}`;
+                    
                     const birthDate = `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`;
                     const age = Math.floor(Math.random() * 100);
                     const religion = ["Roman Catholic", "Protestant", "None", "Other"][Math.floor(Math.random() * 4)];
