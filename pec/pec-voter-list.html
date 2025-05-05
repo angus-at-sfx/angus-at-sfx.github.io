@@ -62,7 +62,6 @@
         generateTestDataButton.addEventListener('click', () => {
             const numRowsInput = document.getElementById('numRowsInput');
             const numRows = parseInt(numRowsInput.value, 10) || 200; // Default to 200 if input is empty or invalid
-            logMessage(`Generating ${numRows} rows of test data...`);
             generateTestData(numRows);
         });
 
@@ -211,6 +210,12 @@
                     const dataRows = rawData.slice(1);
                     logMessage(`Number of data rows: ${dataRows.length}`);
 
+                    // Define the desired column order
+                    const desiredColumns = [
+                        "Name", "Birth Date", "Age", "Phones", "Phone 1", "Phone 2",
+                        "Address 1", "Address 2", "City, Province", "Postal", "Family Name"
+                    ];
+
                     // Process each data row
                     filteredData = dataRows.flatMap(row => {
                         const familyData = {};
@@ -235,14 +240,17 @@
 
                             if (name) { // Only include members with a name
                                 members.push({
-                                    ...familyData, // Include family-level data
-                                    ContactType: contactType,
                                     Name: name,
-                                    BirthDate: birthDate,
+                                    "Birth Date": birthDate,
                                     Age: age,
-                                    Religion: religion,
                                     Phones: phones,
-                                    MemberEnv: memberEnv
+                                    "Phone 1": familyData["Phone 1"],
+                                    "Phone 2": familyData["Phone 2"],
+                                    "Address 1": familyData["Address 1"],
+                                    "Address 2": familyData["Address 2"],
+                                    "City, Province": familyData["City, Province"],
+                                    Postal: familyData["Postal"],
+                                    "Family Name": familyData["Family Name"]
                                 });
                             }
 
@@ -251,6 +259,15 @@
                         }
 
                         return members;
+                    });
+
+                    // Reorder columns based on the desired order
+                    filteredData = filteredData.map(row => {
+                        const reorderedRow = {};
+                        desiredColumns.forEach(column => {
+                            reorderedRow[column] = row[column] || ""; // Include only desired columns
+                        });
+                        return reorderedRow;
                     });
 
                     logMessage(`Filtered Data: ${JSON.stringify(filteredData)}`);
