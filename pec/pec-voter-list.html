@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.20</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.21</span></h1>
     </header>
     <main>
         <section>
@@ -174,10 +174,22 @@
             theadBelow19.innerHTML = '';
             tbodyBelow19.innerHTML = '';
 
+            // Clear existing row count messages
+            const rowCountAbove19 = document.getElementById('rowCountAbove19');
+            const rowCountBelow19 = document.getElementById('rowCountBelow19');
+            if (rowCountAbove19) rowCountAbove19.remove();
+            if (rowCountBelow19) rowCountBelow19.remove();
+
             if (data.length > 0) {
                 // Split data into two groups: Age 19 and above, and Age below 19
                 const dataAbove19 = data.filter(row => parseInt(row.Age, 10) >= 19);
                 const dataBelow19 = data.filter(row => parseInt(row.Age, 10) < 19);
+
+                // Display row count for Age 19 and above
+                const above19Count = document.createElement('p');
+                above19Count.id = 'rowCountAbove19';
+                above19Count.textContent = `Number of rows: ${dataAbove19.length}`;
+                dataPreview.parentElement.insertBefore(above19Count, dataPreview);
 
                 // Display data for Age 19 and above
                 if (dataAbove19.length > 0) {
@@ -200,6 +212,12 @@
                         tbody.appendChild(tr);
                     });
                 }
+
+                // Display row count for Age below 19
+                const below19Count = document.createElement('p');
+                below19Count.id = 'rowCountBelow19';
+                below19Count.textContent = `Number of rows: ${dataBelow19.length}`;
+                document.getElementById('dataPreviewBelow19').parentElement.insertBefore(below19Count, document.getElementById('dataPreviewBelow19'));
 
                 // Display data for Age below 19
                 if (dataBelow19.length > 0) {
