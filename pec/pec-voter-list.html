@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.28</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.29</span></h1>
     </header>
     <main>
         <section>
@@ -319,6 +319,7 @@
 
                         // Extract personal records for each family member
                         let groupStartIndex = header.indexOf("Contact Type");
+                        let hasName = false; // Track if any Name field is non-empty
                         while (groupStartIndex !== -1 && groupStartIndex < header.length) {
                             const contactType = row[groupStartIndex];
                             const name = row[groupStartIndex + 1];
@@ -327,6 +328,10 @@
                             const religion = row[groupStartIndex + 4];
                             const phones = row[groupStartIndex + 5];
                             const memberEnv = row[groupStartIndex + 6];
+
+                            if (name) {
+                                hasName = true; // Mark that at least one Name field is non-empty
+                            }
 
                             if (name) { // Only include members with a name
                                 members.push({
@@ -347,6 +352,24 @@
 
                             // Move to the next group of repeating columns
                             groupStartIndex = header.indexOf("Contact Type", groupStartIndex + 7);
+                        }
+
+                        // If no Name fields are non-empty, add a row with the Family Name as the Name
+                        if (!hasName) {
+                            members.push({
+                                Name: familyData["Family Name"], // Use Family Name as the Name
+                                "Birth Date": "",
+                                Age: "",
+                                Phones: "",
+                                "Phone 1": familyData["Phone 1"],
+                                "Phone 2": familyData["Phone 2"],
+                                "Address 1": familyData["Address 1"],
+                                "Address 2": familyData["Address 2"],
+                                "City, Province": familyData["City, Province"],
+                                Postal: familyData["Postal"],
+                                "Family Name": familyData["Family Name"],
+                                Duplicate: "" // Initialize Duplicate column
+                            });
                         }
 
                         return members;
