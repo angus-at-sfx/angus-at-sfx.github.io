@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.33</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.34</span></h1>
     </header>
     <main>
         <section>
@@ -414,11 +414,13 @@
                         }
                     });
 
-                    // Mark duplicates in the Duplicate column
+                    // Update the Duplicate column with the count of duplicates
                     filteredData.forEach(row => {
                         const key = `${row.Name}-${row["Birth Date"]}`;
                         if (nameBirthDateCounts[key] > 1) {
-                            row.Duplicate = "x";
+                            row.Duplicate = nameBirthDateCounts[key]; // Set the count of duplicates
+                        } else {
+                            row.Duplicate = ""; // Leave empty if no duplicates
                         }
                     });
 
@@ -437,7 +439,7 @@
                         return ageA - ageB;
                     });
 
-                    logMessage(`Filtered Data (Sorted by Name, Marked Duplicates, and Combined Phones): ${JSON.stringify(filteredData)}`);
+                    logMessage(`Filtered Data (Sorted by Name, Marked Duplicates with Counts, and Combined Phones): ${JSON.stringify(filteredData)}`);
                     displayData(filteredData);
                 },
                 error: (error) => {
