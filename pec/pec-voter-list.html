@@ -386,18 +386,19 @@
                         return reorderedRow;
                     });
 
-                    // Identify duplicates in the Name column
-                    const nameCounts = {};
+                    // Identify duplicates using Name and Birth Date as the key
+                    const nameBirthDateCounts = {};
                     filteredData.forEach(row => {
-                        const name = row.Name;
-                        if (name) {
-                            nameCounts[name] = (nameCounts[name] || 0) + 1;
+                        const key = `${row.Name}-${row["Birth Date"]}`; // Combine Name and Birth Date as the key
+                        if (row.Name) {
+                            nameBirthDateCounts[key] = (nameBirthDateCounts[key] || 0) + 1;
                         }
                     });
 
                     // Mark duplicates in the Duplicate column
                     filteredData.forEach(row => {
-                        if (nameCounts[row.Name] > 1) {
+                        const key = `${row.Name}-${row["Birth Date"]}`;
+                        if (nameBirthDateCounts[key] > 1) {
                             row.Duplicate = "x";
                         }
                     });
