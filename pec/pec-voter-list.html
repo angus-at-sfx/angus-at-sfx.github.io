@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.34</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.35</span></h1>
     </header>
     <main>
         <section>
@@ -19,6 +19,12 @@
                 <button id="generateTestData">Generate Test Data</button>
             </div>
             <button id="downloadFilteredCsv">Download Filtered CSV</button>
+        </section>
+        <section>
+            <label>
+                <input type="checkbox" id="removeDuplicates" checked>
+                Remove Duplicates
+            </label>
         </section>
         <section>
             <h3>Filtered Data Preview (Age 19 and Above)</h3>
@@ -307,8 +313,7 @@
 
                     // Define the desired column order
                     const desiredColumns = [
-                        "Name", "Birth Date", "Age", "Phones", "Address 1", "Address 2",
-                        "City, Province", "Postal", "Family Name", "Duplicate", "No Members"
+                        "Name", "Birth Date", "Age", "Phones", "Postal", "Duplicate", "No Members"
                     ];
 
                     // Process each data row
@@ -330,35 +335,20 @@
                             const name = row[groupStartIndex + 1];
                             const birthDate = row[groupStartIndex + 2];
                             const age = row[groupStartIndex + 3];
-                            const religion = row[groupStartIndex + 4];
                             const phones = row[groupStartIndex + 5];
-                            const memberEnv = row[groupStartIndex + 6];
+                            const postal = familyData["Postal"];
 
                             if (name) {
                                 hasName = true; // Mark that at least one Name field is non-empty
                             }
 
                             if (name) { // Only include members with a name
-                                // Combine phone numbers into a single column
-                                const allPhones = [
-                                    phones,
-                                    familyData["Phone 1"],
-                                    familyData["Phone 2"]
-                                ]
-                                    .filter(phone => phone) // Remove empty values
-                                    .filter((phone, index, self) => self.indexOf(phone) === index) // Remove duplicates
-                                    .join(", "); // Combine into a single string
-
                                 members.push({
                                     Name: name,
                                     "Birth Date": birthDate,
                                     Age: age,
-                                    Phones: allPhones, // Combined phone numbers
-                                    "Address 1": familyData["Address 1"],
-                                    "Address 2": familyData["Address 2"],
-                                    "City, Province": familyData["City, Province"],
-                                    Postal: familyData["Postal"],
-                                    "Family Name": familyData["Family Name"],
+                                    Phones: phones,
+                                    Postal: postal,
                                     Duplicate: "", // Initialize Duplicate column
                                     "No Members": "" // Initialize No Members column
                                 });
@@ -370,24 +360,12 @@
 
                         // If no Name fields are non-empty, add a row with the Family Name as the Name
                         if (!hasName) {
-                            const allPhones = [
-                                familyData["Phone 1"],
-                                familyData["Phone 2"]
-                            ]
-                                .filter(phone => phone) // Remove empty values
-                                .filter((phone, index, self) => self.indexOf(phone) === index) // Remove duplicates
-                                .join(", "); // Combine into a single string
-
                             members.push({
                                 Name: familyData["Family Name"], // Use Family Name as the Name
                                 "Birth Date": "",
                                 Age: "",
-                                Phones: allPhones, // Combined phone numbers
-                                "Address 1": familyData["Address 1"],
-                                "Address 2": familyData["Address 2"],
-                                "City, Province": familyData["City, Province"],
+                                Phones: "",
                                 Postal: familyData["Postal"],
-                                "Family Name": familyData["Family Name"],
                                 Duplicate: "", // Initialize Duplicate column
                                 "No Members": "x" // Mark as having no members
                             });
@@ -396,6 +374,32 @@
                         return members;
                     });
 
+                    // Combine duplicate rows if "Remove Duplicates" is checked
+                    const removeDuplicates = document.getElementById('removeDuplicates').checked;
+                    if (removeDuplicates) {
+                        const combinedData = {};
+                        filteredData.forEach(row => {
+                            const key = `${row.Name}-${row["Birth Date"]}-${row.Age}`;
+                            if (!combinedData[key]) {
+                                combinedData[key] = { ...row, Phones: [], Postal: [] };
+                            }
+                            // Combine phone numbers and postal codes
+                            if (row.Phones) {
+                                combinedData[key].Phones.push(...row.Phones.split(", "));
+                            }
+                            if (row.Postal) {
+                                combinedData[key].Postal.push(row.Postal);
+                            }
+                        });
+
+                        // Convert combined data back to an array
+                        filteredData = Object.values(combinedData).map(row => {
+                            row.Phones = [...new Set(row.Phones)].join(", "); // Remove duplicate phone numbers
+                            row.Postal = [...new Set(row.Postal)].join(", "); // Remove duplicate postal codes
+                            return row;
+                        });
+                    }
+
                     // Reorder columns based on the desired order
                     filteredData = filteredData.map(row => {
                         const reorderedRow = {};
@@ -403,25 +407,6 @@
                             reorderedRow[column] = row[column] || ""; // Include only desired columns
                         });
                         return reorderedRow;
-                    });
-
-                    // Identify duplicates using Name and Birth Date as the key
-                    const nameBirthDateCounts = {};
-                    filteredData.forEach(row => {
-                        const key = `${row.Name}-${row["Birth Date"]}`; // Combine Name and Birth Date as the key
-                        if (row.Name) {
-                            nameBirthDateCounts[key] = (nameBirthDateCounts[key] || 0) + 1;
-                        }
-                    });
-
-                    // Update the Duplicate column with the count of duplicates
-                    filteredData.forEach(row => {
-                        const key = `${row.Name}-${row["Birth Date"]}`;
-                        if (nameBirthDateCounts[key] > 1) {
-                            row.Duplicate = nameBirthDateCounts[key]; // Set the count of duplicates
-                        } else {
-                            row.Duplicate = ""; // Leave empty if no duplicates
-                        }
                     });
 
                     // Sort the filtered data by the Name column (primary) and Age column (secondary)
@@ -439,7 +424,7 @@
                         return ageA - ageB;
                     });
 
-                    logMessage(`Filtered Data (Sorted by Name, Marked Duplicates with Counts, and Combined Phones): ${JSON.stringify(filteredData)}`);
+                    logMessage(`Filtered Data (Processed with Remove Duplicates: ${removeDuplicates}): ${JSON.stringify(filteredData)}`);
                     displayData(filteredData);
                 },
                 error: (error) => {
