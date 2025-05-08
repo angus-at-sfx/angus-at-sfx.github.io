@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.31</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.32</span></h1>
     </header>
     <main>
         <section>
@@ -96,6 +96,11 @@
                 "Emily Wilson", "Michael Miller", "Sarah Taylor", "David Anderson", "Laura Thomas"
             ];
 
+            // Pool of predefined birth dates to increase the chance of duplicates
+            const birthDatePool = [
+                "1980-01-01", "1990-05-15", "2000-10-20", "2010-03-25", "1975-07-30"
+            ];
+
             // Helper function to calculate age from birth date
             function calculateAge(birthDate) {
                 if (!birthDate) return ""; // Return empty if birth date is missing
@@ -133,9 +138,9 @@
                         ? namePool[Math.floor(Math.random() * namePool.length)] // Reuse a name from the pool
                         : `Member ${j + 1} of Family ${i + 1}`; // Generate a unique name
                     
-                    // Randomly set Birth Date to empty
+                    // Randomly select a birth date from the predefined pool
                     const birthDate = Math.random() > 0.2 // 20% chance of being empty
-                        ? `${1970 + Math.floor(Math.random() * 50)}-${String(Math.floor(1 + Math.random() * 12)).padStart(2, "0")}-${String(Math.floor(1 + Math.random() * 28)).padStart(2, "0")}`
+                        ? birthDatePool[Math.floor(Math.random() * birthDatePool.length)]
                         : "";
 
                     // Calculate age from birth date
