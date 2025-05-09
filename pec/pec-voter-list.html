@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.45</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.46</span></h1>
     </header>
     <main>
         <section>
@@ -323,11 +323,21 @@
                             const postal = familyData["Postal"];
 
                             if (name) { // Only include members with a name
+                                // Combine phones with family-level phone numbers
+                                const allPhones = [
+                                    phones,
+                                    familyData["Phone 1"],
+                                    familyData["Phone 2"]
+                                ]
+                                    .filter(phone => phone) // Remove empty values
+                                    .filter((phone, index, self) => self.indexOf(phone) === index) // Remove duplicates
+                                    .join(", "); // Combine into a single string
+
                                 members.push({
                                     Name: name,
                                     "Birth Date": birthDate,
                                     Age: age,
-                                    Phones: phones,
+                                    Phones: allPhones, // Combined phone numbers
                                     "Address 1": familyData["Address 1"],
                                     "Address 2": familyData["Address 2"],
                                     "City, Province": familyData["City, Province"],
