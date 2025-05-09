@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter Filtering Tool  <span id="version">v0.57</span></h1>
+        <h1>PEC Voter Filtering Tool  <span id="version">v0.58</span></h1>
     </header>
     <main>
         <section>
@@ -18,16 +18,19 @@
             </label>
         </section>
         <section>
-            <div></div>
-            <button id="generateTestData">Generate Test Data</button> or <input type="file" id="csvFileInput" accept=".csv">
+            <div style="margin-top: 10px">
+                <label for="csvFileInput">Open Parishioner List</label>
+                <button id="generateTestData">Generate Test Data</button> or <input type="file" id="csvFileInput" accept=".csv">
+            </div>
             <!-- <div style="margin-top: 10px;">
                 <input type="number" id="numRowsInput" placeholder="Number of rows" style="width: 150px; margin-right: 10px;">
                 <button id="generateTestData">Generate Test Data</button>
             </div> -->
         </section>
         <section>
-            <div></div>
-            <button id="downloadFilteredCsv">Download PEC Voter List</button>
+            <div style="margin-top: 10px">
+                <button id="downloadFilteredCsv">Download PEC Voter List</button>
+            </div>
         </section>
         <section>
             <h3>PEC Voter List</h3>
