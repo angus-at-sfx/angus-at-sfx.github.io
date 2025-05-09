@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.38</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.39</span></h1>
     </header>
     <main>
         <section>
@@ -336,7 +336,10 @@
                         }
                     });
 
-                    // Count duplicates for each Name/Age pair
+                    // Combine all rows into a single array for global duplicate counting
+                    const combinedData = [...pecVoterList, ...ageAbove19, ...ageBelow19];
+
+                    // Count duplicates for each Name/Age pair globally
                     const countDuplicates = (data) => {
                         const counts = {};
                         data.forEach(row => {
@@ -346,11 +349,9 @@
                         return counts;
                     };
 
-                    const below19Counts = countDuplicates(ageBelow19);
-                    const above19Counts = countDuplicates(ageAbove19);
-                    const pecVoterCounts = countDuplicates(pecVoterList);
+                    const globalCounts = countDuplicates(combinedData);
 
-                    // Update the Duplicate column with the count of duplicates
+                    // Update the Duplicate column with the global count of duplicates
                     const updateDuplicateColumn = (data, counts) => {
                         return data.map(row => {
                             const key = `${row.Name}-${row.Age}`;
@@ -359,9 +360,9 @@
                         });
                     };
 
-                    const filteredDataBelow19 = updateDuplicateColumn(ageBelow19, below19Counts);
-                    const filteredDataAbove19 = updateDuplicateColumn(ageAbove19, above19Counts);
-                    const pecVoterListData = updateDuplicateColumn(pecVoterList, pecVoterCounts);
+                    const filteredDataBelow19 = updateDuplicateColumn(ageBelow19, globalCounts);
+                    const filteredDataAbove19 = updateDuplicateColumn(ageAbove19, globalCounts);
+                    const pecVoterListData = updateDuplicateColumn(pecVoterList, globalCounts);
 
                     // Sort data by Name (A to Z) and then by Age (oldest to youngest)
                     const sortData = (data) => {
