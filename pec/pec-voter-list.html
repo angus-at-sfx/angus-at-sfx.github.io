@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.36</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.37</span></h1>
     </header>
     <main>
         <section>
@@ -336,6 +336,27 @@
                         }
                     });
 
+                    // Sort data by Name (A to Z) and then by Age (oldest to youngest)
+                    const sortData = (data) => {
+                        return data.sort((a, b) => {
+                            const nameA = a.Name.toLowerCase();
+                            const nameB = b.Name.toLowerCase();
+
+                            // Primary sort: Name
+                            if (nameA < nameB) return -1;
+                            if (nameA > nameB) return 1;
+
+                            // Secondary sort: Age (oldest to youngest)
+                            const ageA = parseInt(a.Age, 10) || 0;
+                            const ageB = parseInt(b.Age, 10) || 0;
+                            return ageB - ageA;
+                        });
+                    };
+
+                    const filteredDataBelow19 = sortData(ageBelow19);
+                    const filteredDataAbove19 = sortData(ageAbove19);
+                    const pecVoterListData = sortData(pecVoterList);
+
                     // Reorder columns based on the desired order
                     const reorderColumns = (data) => {
                         return data.map(row => {
@@ -347,14 +368,14 @@
                         });
                     };
 
-                    const filteredDataBelow19 = reorderColumns(ageBelow19);
-                    const filteredDataAbove19 = reorderColumns(ageAbove19);
-                    const pecVoterListData = reorderColumns(pecVoterList);
+                    const finalDataBelow19 = reorderColumns(filteredDataBelow19);
+                    const finalDataAbove19 = reorderColumns(filteredDataAbove19);
+                    const finalPecVoterList = reorderColumns(pecVoterListData);
 
                     // Display the data in the respective tables
-                    displayData(filteredDataBelow19, "dataPreviewBelow19");
-                    displayData(filteredDataAbove19, "dataPreview");
-                    displayData(pecVoterListData, "pecVoterListTable");
+                    displayData(finalDataBelow19, "dataPreviewBelow19");
+                    displayData(finalDataAbove19, "dataPreview");
+                    displayData(finalPecVoterList, "pecVoterListTable");
                 },
                 error: (error) => {
                     logMessage(`Error parsing CSV: ${error.message}`);
