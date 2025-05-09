@@ -14,7 +14,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter Filtering Tool  <span id="version">v0.61</span></h1>
+        <h1>PEC Voter Filtering Tool  <span id="version">v0.62</span></h1>
     </header>
     <main>
         <section>
@@ -502,8 +502,8 @@
                     const finalDataAbove19 = reorderColumns(sortedDataAbove19);
                     const finalPecVoterList = reorderColumns(sortedPecVoterList);
 
-                    // Populate the filteredData array with the PEC Voter List table only
-                    filteredData = finalPecVoterList;
+                    // Use the filterDataObject function to filter the PEC Voter List
+                    filteredData = filterDataObject(finalPecVoterList);
 
                     // Display the data in the respective tables
                     displayData(finalDataBelow19, "dataPreviewBelow19");
@@ -514,6 +514,55 @@
                     logMessage(`Error parsing CSV: ${error.message}`);
                 }
             });
+        }
+
+        function filterDataObject(data) {
+            const filterData = [];
+
+            // Check if sensitive information should be hidden
+            const hideSensitiveInfo = document.getElementById('hideSensitiveInfo').checked;
+            const sensitiveColumns = ["Address 1", "Address 2", "City, Province", "Postal", "Age", "Family Name"];
+
+            if (data.length > 0) {
+                // Filter headers based on sensitive information
+                const headers = Object.keys(data[0]).filter(header => {
+                    return !(hideSensitiveInfo && sensitiveColumns.includes(header));
+                });
+
+                // Process each row
+                data.forEach(row => {
+                    const filteredRow = {};
+                    headers.forEach(header => {
+                        if (hideSensitiveInfo && header === "Birth Date") {
+                            // Extract only the day from the Birth Date
+                            const birthDate = row[header];
+                            if (birthDate) {
+                                const day = new Date(birthDate).getUTCDate(); // Extract the day in UTC
+                                filteredRow[header] = day ? `${day}` : ""; // Store "Day X" or empty
+                            } else {
+                                filteredRow[header] = ""; // Empty if no Birth Date
+                            }
+                        } else if (hideSensitiveInfo && header === "Phones") {
+                            // Keep only the last four digits of each phone number
+                            const phones = row[header];
+                            if (phones) {
+                                const maskedPhones = phones
+                                    .split(", ") // Split the phone numbers into an array
+                                    .map(phone => phone.slice(-4)) // Extract the last four digits
+                                    .join(", "); // Join them back into a comma-separated string
+                                filteredRow[header] = maskedPhones;
+                            } else {
+                                filteredRow[header] = ""; // Empty if no phone numbers
+                            }
+                        } else {
+                            filteredRow[header] = row[header]; // Store the original value
+                        }
+                    });
+                    filterData.push(filteredRow);
+                });
+            }
+
+            return filterData;
         }
     </script>
 </body>
