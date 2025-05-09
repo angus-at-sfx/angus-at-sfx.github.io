@@ -8,16 +8,15 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.52</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.53</span></h1>
     </header>
     <main>
         <section>
-            <h2>Upload and Filter CSV</h2>
-            <input type="file" id="csvFileInput" accept=".csv">
-            <div style="margin-top: 10px;">
+            <button id="generateTestData">Generate Test Data</button><h3> or </h3><input type="file" id="csvFileInput" accept=".csv">
+            <!-- <div style="margin-top: 10px;">
                 <input type="number" id="numRowsInput" placeholder="Number of rows" style="width: 150px; margin-right: 10px;">
                 <button id="generateTestData">Generate Test Data</button>
-            </div>
+            </div> -->
             <button id="downloadFilteredCsv">Download Filtered CSV</button>
         </section>
         <section>
@@ -80,9 +79,10 @@
 
         // Event listener for the Generate Test Data button
         generateTestDataButton.addEventListener('click', () => {
-            const numRowsInput = document.getElementById('numRowsInput');
-            const numRows = parseInt(numRowsInput.value, 10) || 200; // Default to 200 if input is empty or invalid
-            generateTestData(numRows);
+            // const numRowsInput = document.getElementById('numRowsInput');
+            // const numRows = parseInt(numRowsInput.value, 10) || 200; // Default to 200 if input is empty or invalid
+            //generateTestData(numRows);
+            generateTestData(200); // Generate 200 rows of test data
         });
 
         // Placeholder function for generating test data
