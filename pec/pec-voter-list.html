@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.39</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.40</span></h1>
     </header>
     <main>
         <section>
@@ -202,6 +202,16 @@
             // Clear existing table content
             thead.innerHTML = '';
             tbody.innerHTML = '';
+
+            // Display the total number of rows above the table
+            const rowCountId = `${tableId}-rowCount`;
+            let rowCountElement = document.getElementById(rowCountId);
+            if (!rowCountElement) {
+                rowCountElement = document.createElement('p');
+                rowCountElement.id = rowCountId;
+                table.parentElement.insertBefore(rowCountElement, table);
+            }
+            rowCountElement.textContent = `Total Rows: ${data.length}`;
 
             if (data.length > 0) {
                 // Create table headers
