@@ -14,7 +14,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter Filtering Tool  <span id="version">v0.60</span></h1>
+        <h1>PEC Voter Filtering Tool  <span id="version">v0.61</span></h1>
     </header>
     <main>
         <section>
@@ -501,6 +501,9 @@
                     const finalDataBelow19 = reorderColumns(sortedDataBelow19);
                     const finalDataAbove19 = reorderColumns(sortedDataAbove19);
                     const finalPecVoterList = reorderColumns(sortedPecVoterList);
+
+                    // Populate the filteredData array with the PEC Voter List table only
+                    filteredData = finalPecVoterList;
 
                     // Display the data in the respective tables
                     displayData(finalDataBelow19, "dataPreviewBelow19");
