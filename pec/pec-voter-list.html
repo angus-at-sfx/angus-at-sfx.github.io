@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.42</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.43</span></h1>
     </header>
     <main>
         <section>
@@ -41,9 +41,9 @@
                 <tbody></tbody>
             </table>
         </section>
-        <section id="debugLogs">
+        <!-- <section id="debugLogs">
             <h3>Debug Logs</h3>
-        </section>
+        </section> -->
     </main>
     <footer>
         <p>&copy; 2025 PEC Voter List. All rights reserved.</p>
@@ -188,10 +188,10 @@
 
         // Function to display debugging messages on the page
         function logMessage(message) {
-            const logSection = document.getElementById('debugLogs');
-            const logMessage = document.createElement('p');
-            logMessage.textContent = message;
-            logSection.appendChild(logMessage);
+            // const logSection = document.getElementById('debugLogs');
+            // const logMessage = document.createElement('p');
+            // logMessage.textContent = message;
+            // logSection.appendChild(logMessage);
         }
 
         function displayData(data, tableId) {
