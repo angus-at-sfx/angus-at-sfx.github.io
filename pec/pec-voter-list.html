@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.37</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.38</span></h1>
     </header>
     <main>
         <section>
@@ -336,6 +336,33 @@
                         }
                     });
 
+                    // Count duplicates for each Name/Age pair
+                    const countDuplicates = (data) => {
+                        const counts = {};
+                        data.forEach(row => {
+                            const key = `${row.Name}-${row.Age}`;
+                            counts[key] = (counts[key] || 0) + 1;
+                        });
+                        return counts;
+                    };
+
+                    const below19Counts = countDuplicates(ageBelow19);
+                    const above19Counts = countDuplicates(ageAbove19);
+                    const pecVoterCounts = countDuplicates(pecVoterList);
+
+                    // Update the Duplicate column with the count of duplicates
+                    const updateDuplicateColumn = (data, counts) => {
+                        return data.map(row => {
+                            const key = `${row.Name}-${row.Age}`;
+                            row.Duplicate = counts[key] > 1 ? counts[key] : ""; // Add count if duplicates exist
+                            return row;
+                        });
+                    };
+
+                    const filteredDataBelow19 = updateDuplicateColumn(ageBelow19, below19Counts);
+                    const filteredDataAbove19 = updateDuplicateColumn(ageAbove19, above19Counts);
+                    const pecVoterListData = updateDuplicateColumn(pecVoterList, pecVoterCounts);
+
                     // Sort data by Name (A to Z) and then by Age (oldest to youngest)
                     const sortData = (data) => {
                         return data.sort((a, b) => {
@@ -353,9 +380,9 @@
                         });
                     };
 
-                    const filteredDataBelow19 = sortData(ageBelow19);
-                    const filteredDataAbove19 = sortData(ageAbove19);
-                    const pecVoterListData = sortData(pecVoterList);
+                    const sortedDataBelow19 = sortData(filteredDataBelow19);
+                    const sortedDataAbove19 = sortData(filteredDataAbove19);
+                    const sortedPecVoterList = sortData(pecVoterListData);
 
                     // Reorder columns based on the desired order
                     const reorderColumns = (data) => {
@@ -368,9 +395,9 @@
                         });
                     };
 
-                    const finalDataBelow19 = reorderColumns(filteredDataBelow19);
-                    const finalDataAbove19 = reorderColumns(filteredDataAbove19);
-                    const finalPecVoterList = reorderColumns(pecVoterListData);
+                    const finalDataBelow19 = reorderColumns(sortedDataBelow19);
+                    const finalDataAbove19 = reorderColumns(sortedDataAbove19);
+                    const finalPecVoterList = reorderColumns(sortedPecVoterList);
 
                     // Display the data in the respective tables
                     displayData(finalDataBelow19, "dataPreviewBelow19");
