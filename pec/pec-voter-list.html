@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.44</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.45</span></h1>
     </header>
     <main>
         <section>
@@ -88,6 +88,7 @@
                 "Family Name", "Address 1", "Address 2", "City, Province", "Postal", "Phone 1", "Phone 2", "Env.",
                 "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
                 "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
+                "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env.",
                 "Contact Type", "Name", "Birth Date", "Age", "Religion", "Phones", "Env."
             ];
 
@@ -126,6 +127,21 @@
                 return phones.join(", "); // Combine phone numbers into a comma-separated string
             }
 
+            // Helper function to generate a random Canadian postal code
+            function generatePostalCode() {
+                const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const digits = "0123456789";
+                return (
+                    letters[Math.floor(Math.random() * letters.length)] +
+                    digits[Math.floor(Math.random() * digits.length)] +
+                    letters[Math.floor(Math.random() * letters.length)] +
+                    " " +
+                    digits[Math.floor(Math.random() * digits.length)] +
+                    letters[Math.floor(Math.random() * letters.length)] +
+                    digits[Math.floor(Math.random() * digits.length)]
+                );
+            }
+
             // Generate random data rows
             const dataRows = [];
             for (let i = 0; i < numRows; i++) {
@@ -133,7 +149,7 @@
                 const address1 = `${Math.floor(Math.random() * 10000)} Random Street`;
                 const address2 = Math.random() > 0.5 ? "Apt " + Math.floor(Math.random() * 100) : "";
                 const cityProvince = `City ${i % 50}, Province ${String.fromCharCode(65 + (i % 26))}`;
-                const postal = `P${Math.floor(Math.random() * 10)}C ${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`;
+                const postal = generatePostalCode(); // Generate a valid Canadian postal code
                 const phone1 = Math.random() > 0.5 ? `(H) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
                 const phone2 = Math.random() > 0.5 ? `(C) 555-${Math.floor(1000 + Math.random() * 9000)}` : "";
                 const env = `${Math.floor(Math.random() * 20)} Years`;
