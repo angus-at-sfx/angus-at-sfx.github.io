@@ -14,7 +14,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter Filtering Tool  <span id="version">v0.63</span></h1>
+        <h1>PEC Voter Filtering Tool  <span id="version">v0.64</span></h1>
     </header>
     <main>
         <section>
@@ -521,7 +521,7 @@
 
             // Check if sensitive information should be hidden
             const hideSensitiveInfo = document.getElementById('hideSensitiveInfo').checked;
-            const sensitiveColumns = ["Address 1", "Address 2", "City, Province", "Postal", "Age", "Family Name"];
+            const sensitiveColumns = ["Address 1", "Address 2", "City, Province", "Postal", "Age", "Birth Date"];
 
             if (data.length > 0) {
                 // Filter headers based on sensitive information
