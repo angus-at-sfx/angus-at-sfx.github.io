@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.51</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.52</span></h1>
     </header>
     <main>
         <section>
@@ -265,7 +265,7 @@
                             // Extract only the day from the Birth Date
                             const birthDate = row[header];
                             if (birthDate) {
-                                const day = new Date(birthDate).getDate(); // Extract the day
+                                const day = new Date(birthDate).getUTCDate(); // Extract the day
                                 td.textContent = day ? `${day}` : ""; // Display "Day X" or empty
                             } else {
                                 td.textContent = ""; // Empty if no Birth Date
