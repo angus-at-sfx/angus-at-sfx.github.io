@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.49</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.50</span></h1>
     </header>
     <main>
         <section>
@@ -261,7 +261,18 @@
                     const tr = document.createElement('tr');
                     headers.forEach(header => {
                         const td = document.createElement('td');
-                        td.textContent = row[header];
+                        if (hideSensitiveInfo && header === "Birth Date") {
+                            // Extract only the day from the Birth Date
+                            const birthDate = row[header];
+                            if (birthDate) {
+                                const day = new Date(birthDate).getDate(); // Extract the day
+                                td.textContent = day ? `${day}` : ""; // Display "Day X" or empty
+                            } else {
+                                td.textContent = ""; // Empty if no Birth Date
+                            }
+                        } else {
+                            td.textContent = row[header];
+                        }
                         tr.appendChild(td);
                     });
                     tbody.appendChild(tr);
