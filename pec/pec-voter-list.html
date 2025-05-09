@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.34</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.35</span></h1>
     </header>
     <main>
         <section>
@@ -36,6 +36,13 @@
         </section>
         <section id="debugLogs">
             <h3>Debug Logs</h3>
+        </section>
+        <section>
+            <h3>PEC Voter List</h3>
+            <table id="pecVoterListTable" border="1">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
         </section>
     </main>
     <footer>
@@ -187,90 +194,43 @@
             logSection.appendChild(logMessage);
         }
 
-        function displayData(data) {
-            const thead = dataPreview.querySelector('thead');
-            const tbody = dataPreview.querySelector('tbody');
-            const theadBelow19 = document.getElementById('dataPreviewBelow19').querySelector('thead');
-            const tbodyBelow19 = document.getElementById('dataPreviewBelow19').querySelector('tbody');
+        function displayData(data, tableId) {
+            const table = document.getElementById(tableId);
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
 
             // Clear existing table content
             thead.innerHTML = '';
             tbody.innerHTML = '';
-            theadBelow19.innerHTML = '';
-            tbodyBelow19.innerHTML = '';
-
-            // Clear existing row count messages
-            const rowCountAbove19 = document.getElementById('rowCountAbove19');
-            const rowCountBelow19 = document.getElementById('rowCountBelow19');
-            if (rowCountAbove19) rowCountAbove19.remove();
-            if (rowCountBelow19) rowCountBelow19.remove();
 
             if (data.length > 0) {
-                // Split data into two groups: Age 19 and above, and Age below 19 or empty Age
-                const dataAbove19 = data.filter(row => parseInt(row.Age, 10) >= 19);
-                const dataBelow19 = data.filter(row => {
-                    const age = parseInt(row.Age, 10);
-                    return isNaN(age) || age < 19; // Include rows with empty or invalid Age
+                // Create table headers
+                const headers = Object.keys(data[0]);
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
                 });
+                thead.appendChild(headerRow);
 
-                // Display row count for Age 19 and above
-                const above19Count = document.createElement('p');
-                above19Count.id = 'rowCountAbove19';
-                above19Count.textContent = `Number of rows: ${dataAbove19.length}`;
-                dataPreview.parentElement.insertBefore(above19Count, dataPreview);
-
-                // Display data for Age 19 and above
-                if (dataAbove19.length > 0) {
-                    const headers = Object.keys(dataAbove19[0]);
-                    const headerRow = document.createElement('tr');
+                // Create table rows
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
                     headers.forEach(header => {
-                        const th = document.createElement('th');
-                        th.textContent = header;
-                        headerRow.appendChild(th);
+                        const td = document.createElement('td');
+                        td.textContent = row[header];
+                        tr.appendChild(td);
                     });
-                    thead.appendChild(headerRow);
-
-                    dataAbove19.forEach(row => {
-                        const tr = document.createElement('tr');
-                        headers.forEach(header => {
-                            const td = document.createElement('td');
-                            td.textContent = row[header];
-                            tr.appendChild(td);
-                        });
-                        tbody.appendChild(tr);
-                    });
-                }
-
-                // Display row count for Age below 19 or empty Age
-                const below19Count = document.createElement('p');
-                below19Count.id = 'rowCountBelow19';
-                below19Count.textContent = `Number of rows: ${dataBelow19.length}`;
-                document.getElementById('dataPreviewBelow19').parentElement.insertBefore(below19Count, document.getElementById('dataPreviewBelow19'));
-
-                // Display data for Age below 19 or empty Age
-                if (dataBelow19.length > 0) {
-                    const headers = Object.keys(dataBelow19[0]);
-                    const headerRow = document.createElement('tr');
-                    headers.forEach(header => {
-                        const th = document.createElement('th');
-                        th.textContent = header;
-                        headerRow.appendChild(th);
-                    });
-                    theadBelow19.appendChild(headerRow);
-
-                    dataBelow19.forEach(row => {
-                        const tr = document.createElement('tr');
-                        headers.forEach(header => {
-                            const td = document.createElement('td');
-                            td.textContent = row[header];
-                            tr.appendChild(td);
-                        });
-                        tbodyBelow19.appendChild(tr);
-                    });
-                }
+                    tbody.appendChild(tr);
+                });
             } else {
-                console.warn("No data to display."); // Debugging: Log if no data is available
-                alert("No data to display.");
+                const noDataRow = document.createElement('tr');
+                const noDataCell = document.createElement('td');
+                noDataCell.textContent = 'No data available';
+                noDataCell.colSpan = Object.keys(data[0] || {}).length;
+                noDataRow.appendChild(noDataCell);
+                tbody.appendChild(noDataRow);
             }
         }
 
@@ -312,7 +272,7 @@
                     ];
 
                     // Process each data row
-                    filteredData = dataRows.flatMap(row => {
+                    const allData = dataRows.flatMap(row => {
                         const familyData = {};
                         const members = [];
 
@@ -324,40 +284,24 @@
 
                         // Extract personal records for each family member
                         let groupStartIndex = header.indexOf("Contact Type");
-                        let hasName = false; // Track if any Name field is non-empty
                         while (groupStartIndex !== -1 && groupStartIndex < header.length) {
                             const contactType = row[groupStartIndex];
                             const name = row[groupStartIndex + 1];
                             const birthDate = row[groupStartIndex + 2];
                             const age = row[groupStartIndex + 3];
-                            const religion = row[groupStartIndex + 4];
                             const phones = row[groupStartIndex + 5];
-                            const memberEnv = row[groupStartIndex + 6];
-
-                            if (name) {
-                                hasName = true; // Mark that at least one Name field is non-empty
-                            }
+                            const postal = familyData["Postal"];
 
                             if (name) { // Only include members with a name
-                                // Combine phone numbers into a single column
-                                const allPhones = [
-                                    phones,
-                                    familyData["Phone 1"],
-                                    familyData["Phone 2"]
-                                ]
-                                    .filter(phone => phone) // Remove empty values
-                                    .filter((phone, index, self) => self.indexOf(phone) === index) // Remove duplicates
-                                    .join(", "); // Combine into a single string
-
                                 members.push({
                                     Name: name,
                                     "Birth Date": birthDate,
                                     Age: age,
-                                    Phones: allPhones, // Combined phone numbers
+                                    Phones: phones,
                                     "Address 1": familyData["Address 1"],
                                     "Address 2": familyData["Address 2"],
                                     "City, Province": familyData["City, Province"],
-                                    Postal: familyData["Postal"],
+                                    Postal: postal,
                                     "Family Name": familyData["Family Name"],
                                     Duplicate: "", // Initialize Duplicate column
                                     "No Members": "" // Initialize No Members column
@@ -368,79 +312,49 @@
                             groupStartIndex = header.indexOf("Contact Type", groupStartIndex + 7);
                         }
 
-                        // If no Name fields are non-empty, add a row with the Family Name as the Name
-                        if (!hasName) {
-                            const allPhones = [
-                                familyData["Phone 1"],
-                                familyData["Phone 2"]
-                            ]
-                                .filter(phone => phone) // Remove empty values
-                                .filter((phone, index, self) => self.indexOf(phone) === index) // Remove duplicates
-                                .join(", "); // Combine into a single string
-
-                            members.push({
-                                Name: familyData["Family Name"], // Use Family Name as the Name
-                                "Birth Date": "",
-                                Age: "",
-                                Phones: allPhones, // Combined phone numbers
-                                "Address 1": familyData["Address 1"],
-                                "Address 2": familyData["Address 2"],
-                                "City, Province": familyData["City, Province"],
-                                Postal: familyData["Postal"],
-                                "Family Name": familyData["Family Name"],
-                                Duplicate: "", // Initialize Duplicate column
-                                "No Members": "x" // Mark as having no members
-                            });
-                        }
-
                         return members;
                     });
 
-                    // Reorder columns based on the desired order
-                    filteredData = filteredData.map(row => {
-                        const reorderedRow = {};
-                        desiredColumns.forEach(column => {
-                            reorderedRow[column] = row[column] || ""; // Include only desired columns
-                        });
-                        return reorderedRow;
-                    });
+                    // Separate data into three groups
+                    const pecVoterList = [];
+                    const ageAbove19 = [];
+                    const ageBelow19 = [];
 
-                    // Identify duplicates using Name and Birth Date as the key
-                    const nameBirthDateCounts = {};
-                    filteredData.forEach(row => {
-                        const key = `${row.Name}-${row["Birth Date"]}`; // Combine Name and Birth Date as the key
-                        if (row.Name) {
-                            nameBirthDateCounts[key] = (nameBirthDateCounts[key] || 0) + 1;
-                        }
-                    });
+                    const seenNames = new Set();
 
-                    // Update the Duplicate column with the count of duplicates
-                    filteredData.forEach(row => {
-                        const key = `${row.Name}-${row["Birth Date"]}`;
-                        if (nameBirthDateCounts[key] > 1) {
-                            row.Duplicate = nameBirthDateCounts[key]; // Set the count of duplicates
+                    allData.forEach(row => {
+                        const age = parseInt(row.Age, 10);
+                        if (isNaN(age) || age < 19) {
+                            ageBelow19.push(row); // Add to Age Below 19 table
                         } else {
-                            row.Duplicate = ""; // Leave empty if no duplicates
+                            if (!seenNames.has(row.Name)) {
+                                pecVoterList.push(row); // Add first occurrence to PEC Voter List
+                                seenNames.add(row.Name);
+                            } else {
+                                ageAbove19.push(row); // Add remaining duplicates to Age 19 and Above table
+                            }
                         }
                     });
 
-                    // Sort the filtered data by the Name column (primary) and Age column (secondary)
-                    filteredData.sort((a, b) => {
-                        const nameA = a.Name.toLowerCase();
-                        const nameB = b.Name.toLowerCase();
+                    // Reorder columns based on the desired order
+                    const reorderColumns = (data) => {
+                        return data.map(row => {
+                            const reorderedRow = {};
+                            desiredColumns.forEach(column => {
+                                reorderedRow[column] = row[column] || ""; // Include only desired columns
+                            });
+                            return reorderedRow;
+                        });
+                    };
 
-                        // Primary sort: Name
-                        if (nameA < nameB) return -1;
-                        if (nameA > nameB) return 1;
+                    const filteredDataBelow19 = reorderColumns(ageBelow19);
+                    const filteredDataAbove19 = reorderColumns(ageAbove19);
+                    const pecVoterListData = reorderColumns(pecVoterList);
 
-                        // Secondary sort: Age (numerical comparison)
-                        const ageA = parseInt(a.Age, 10) || 0; // Default to 0 if Age is missing or invalid
-                        const ageB = parseInt(b.Age, 10) || 0;
-                        return ageA - ageB;
-                    });
-
-                    logMessage(`Filtered Data (Sorted by Name, Marked Duplicates with Counts, and Combined Phones): ${JSON.stringify(filteredData)}`);
-                    displayData(filteredData);
+                    // Display the data in the respective tables
+                    displayData(filteredDataBelow19, "dataPreviewBelow19");
+                    displayData(filteredDataAbove19, "dataPreview");
+                    displayData(pecVoterListData, "pecVoterListTable");
                 },
                 error: (error) => {
                     logMessage(`Error parsing CSV: ${error.message}`);
