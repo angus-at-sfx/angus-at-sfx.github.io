@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.48</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.49</span></h1>
     </header>
     <main>
         <section>
@@ -241,7 +241,7 @@
 
             // Check if sensitive information should be hidden
             const hideSensitiveInfo = document.getElementById('hideSensitiveInfo').checked;
-            const sensitiveColumns = ["Address 1", "Address 2", "City, Province", "Postal"];
+            const sensitiveColumns = ["Address 1", "Address 2", "City, Province", "Postal", "Age", "Family Name"];
 
             if (data.length > 0) {
                 // Create table headers
