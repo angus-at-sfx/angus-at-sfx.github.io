@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PEC Voter Filtering Tool</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>PEC Voter Filtering Tool  <span id="version">v0.59</span></h1>
+        <h1>PEC Voter Filtering Tool  <span id="version">v0.60</span></h1>
     </header>
     <main>
         <section>
@@ -68,6 +74,18 @@
 
         let filteredData = [];
 
+        // Function to update the state of the "Download PEC Voter List" button
+        function updateDownloadButtonState() {
+            if (filteredData.length > 0) {
+                downloadFilteredCsv.disabled = false; // Enable the button if there is data
+            } else {
+                downloadFilteredCsv.disabled = true; // Disable the button if there is no data
+            }
+        }
+
+        // Initialize the button state on page load
+        updateDownloadButtonState();
+
         csvFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -76,10 +94,13 @@
                 reader.onload = (e) => {
                     const csvData = e.target.result;
                     parseAndFilterData(csvData); // Use the shared parsing logic
+                    updateDownloadButtonState(); // Update the button state after parsing
                 };
                 reader.readAsText(file);
             } else {
                 logMessage("No file selected.");
+                filteredData = []; // Clear the filtered data
+                updateDownloadButtonState(); // Update the button state
             }
         });
 
@@ -89,6 +110,7 @@
             // const numRows = parseInt(numRowsInput.value, 10) || 200; // Default to 200 if input is empty or invalid
             //generateTestData(numRows);
             generateTestData(200); // Generate 200 rows of test data
+            updateDownloadButtonState(); // Update the button state after generating test data
         });
 
         // Placeholder function for generating test data
