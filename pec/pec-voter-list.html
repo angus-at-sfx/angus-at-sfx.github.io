@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>PEC Voter List  <span id="version">v0.50</span></h1>
+        <h1>PEC Voter List  <span id="version">v0.51</span></h1>
     </header>
     <main>
         <section>
@@ -269,6 +269,18 @@
                                 td.textContent = day ? `${day}` : ""; // Display "Day X" or empty
                             } else {
                                 td.textContent = ""; // Empty if no Birth Date
+                            }
+                        } else if (hideSensitiveInfo && header === "Phones") {
+                            // Keep only the last four digits of each phone number
+                            const phones = row[header];
+                            if (phones) {
+                                const maskedPhones = phones
+                                    .split(", ") // Split the phone numbers into an array
+                                    .map(phone => phone.slice(-4)) // Extract the last four digits
+                                    .join(", "); // Join them back into a comma-separated string
+                                td.textContent = maskedPhones;
+                            } else {
+                                td.textContent = ""; // Empty if no phone numbers
                             }
                         } else {
                             td.textContent = row[header];
