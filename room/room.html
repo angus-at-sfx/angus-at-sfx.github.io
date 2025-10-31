@@ -20,7 +20,14 @@
 
     /* ensure the form sits below the calendar and matches max width */
     .form-embed{width:100%; max-width:var(--max-w); background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 6px 20px rgba(16,24,40,.04); padding:0}
-    .form-embed iframe{width:100%; height:800px; border:0; display:block;}
+    /* try to show the full form: use viewport height and cap with a sensible max */
+    .form-embed iframe{
+      width:100%;
+      height: min(1200px, calc(100vh - 220px)); /* adjust 220px if header/actions change */
+      border:0;
+      display:block;
+      overflow:hidden; /* hides iframe scrollbar in supporting browsers */
+    }
   </style>
 </head>
 <body>
@@ -40,7 +47,7 @@
     </div>
 
     <div class="form-embed" aria-label="Room booking form">
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRWKXWOEF4xGf4j2W3vynzrXIhPnEGbOrYLluVFqA3cO0XPw/viewform?usp=dialog" title="Room Booking Form"></iframe>
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRWKXWOEF4xGf4j2W3vynzrXIhPnEGbOrYLluVFqA3cO0XPw/viewform?usp=dialog" title="Room Booking Form" scrolling="no" style="border:0; overflow:hidden;"></iframe>
     </div>
   </main>
 </body>
