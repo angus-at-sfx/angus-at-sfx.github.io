@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Room — Calendar</title>
+  <style>
+    :root{--max-w:900px}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; margin:0; background:#f7f7f8; color:#111}
+    header{padding:1rem; text-align:center; background:#fff; box-shadow:0 1px 0 rgba(0,0,0,.05)}
+    main{padding:1.25rem; display:flex; justify-content:center}
+    .frame-wrap{width:100%; max-width:var(--max-w); background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 6px 20px rgba(16,24,40,.06)}
+    /* maintain 4:3 aspect ratio (800x600) and make iframe fill container */
+    .frame-inner{position:relative; padding-top:75%;}
+    .frame-inner iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+    .actions{display:flex; justify-content:center; gap:.5rem; padding:.75rem; background:#fbfbfc; border-top:1px solid #eee}
+    .btn{font-size:.9rem; padding:.45rem .75rem; background:#0b5fff; color:#fff; border-radius:6px; text-decoration:none}
+    .btn.secondary{background:#e9eefb; color:#0b5fff}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="margin:.25rem 0;font-size:1.125rem">Room Calendar</h1>
+  </header>
+
+  <main>
+    <div class="frame-wrap" aria-label="Embedded Google Calendar">
+      <div class="frame-inner">
+        <iframe src="https://calendar.google.com/calendar/embed?src=d2a1d35ba51117c68594541af2d8e10a261cf7d0ada0beb0aaeceed396cf48a8%40group.calendar.google.com&ctz=America%2FVancouver" style="border: 0" width="800" height="600" frameborder="0" scrolling="no" title="Room calendar"></iframe>
+      </div>
+      <div class="actions">
+        <a class="btn" href="https://calendar.google.com/calendar/u/0?cid=d2a1d35ba51117c68594541af2d8e10a261cf7d0ada0beb0aaeceed396cf48a8%40group.calendar.google.com" target="_blank" rel="noopener">Open in Google Calendar</a>
+        <a class="btn secondary" href="#" onclick="location.reload(); return false;">Reload</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
